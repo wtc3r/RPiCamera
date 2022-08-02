@@ -4,15 +4,11 @@
     #general libraries:
 from masterFunctions import *
 from time import sleep
+from datetime import datetime
 
     #Temperatuur sensor:
 from SenseTemperature import *
 # print(read_temp())
-
-    #take_photo:
-from take_photo import *
-# preview(2)
-# snap("test01.jpg")
 
     #OLED scherm:
 from OLEDbaseCode import *
@@ -26,27 +22,39 @@ from numpadInput import numpadInput
 # print(numpadInput())
 
 ## START CODE ##
+# first show a start screen
+# Initialize time
+t0 = datetime.now()
+
+showImage('7Kgn.gif')
+sleep(2)
+emptyOLED()
+
+
 active = True
 sleep_time = 0.05
 class Menu():
     def item_1(self):
-        print('1')
+        takePhotoInterval()
         sleep(sleep_time)
         return True
     def item_2(self):
-        print('2')
+        print(datetime.now() - t0)
         sleep(sleep_time)
         return True
     def item_3(self):
         print('3')
+        videoFeed()
         sleep(sleep_time)
         return True
     def item_4(self):
         print('4')
+        emptyOLED()
         sleep(sleep_time)
         return True
     def item_5(self):
         print('5')
+        showImage('7Kgn.gif')
         sleep(sleep_time)
         return True
     def item_6(self):
@@ -80,12 +88,16 @@ class Menu():
         name_of_item="item_"+str(no)
         method=getattr(self,name_of_item,lambda :'Invalid input')
         return method()
-
 mo = Menu()
+
+# prepare vars
 active = True
+num = 0
 last_num = 0
+nPress = 0
+
 while(active):
-    num = numpadInput()
-    if num != last_num:
-        active = mo.getItem(num) 
-    last_num = num
+    num, nPress = numpadInput(num,nPress)
+    active = mo.getItem(num)
+#close & clean up
+emptyOLED()

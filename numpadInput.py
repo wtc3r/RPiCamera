@@ -1,6 +1,15 @@
-def numpadInput():
+def numpadInput(last_num,nPress):
     import RPi.GPIO as GPIO
+    from time import sleep
     GPIO.setmode(GPIO.BCM)
+    
+    count_num = 0
+    for k in range(12):
+        if last_num != k:
+            count_num += 1
+    if count_num == 12:
+        last_num = 0        
+    
     # define numpad layout matrix
     MATRIX = [[1,2,3],
               [4,5,6],
@@ -27,7 +36,7 @@ def numpadInput():
                     if GPIO.input(row[i]) == 0:
                         # some action
 #                         print(MATRIX[i][j])
-                        return MATRIX[i][j]
+                        num = MATRIX[i][j]
                         # while the button is pressed don't do anyting (pass)
                         while(GPIO.input(row[i]) == 0):
                             pass
@@ -37,3 +46,11 @@ def numpadInput():
     # reset GPIO pins     
     except KeyboardInterrupt:
         GPIO.cleanup()
+    # catch if numbers are pressed multiple times in a row
+    if num != last_num:
+        nPress = 0
+    elif num == last_num and nPress < 1:
+        sleep(0.5)
+        nPress += 1
+    last_num = num
+    return num, nPress
